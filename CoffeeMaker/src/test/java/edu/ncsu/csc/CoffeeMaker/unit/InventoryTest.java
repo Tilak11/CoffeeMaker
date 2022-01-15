@@ -49,16 +49,38 @@ public class InventoryTest {
 
         recipe.setPrice( 5 );
 
+        // Recipe #2
+        final Recipe recipe2 = new Recipe();
+        recipe2.setName( "Delicious Not-Coffee2" );
+        recipe2.setChocolate( 10 );
+        recipe2.setMilk( 20 );
+        recipe2.setSugar( 5 );
+        recipe2.setCoffee( 1 );
+
+        recipe2.setPrice( 5 );
+
         i.useIngredients( recipe );
 
         /*
          * Make sure that all of the inventory fields are now properly updated
          */
 
-        Assert.assertEquals( 490, (int) i.getChocolate() );
-        Assert.assertEquals( 480, (int) i.getMilk() );
-        Assert.assertEquals( 495, (int) i.getSugar() );
-        Assert.assertEquals( 499, (int) i.getCoffee() );
+        // Assert.assertEquals( 490, (int) i.getChocolate() );
+        // Assert.assertEquals( 480, (int) i.getMilk() );
+        // Assert.assertEquals( 495, (int) i.getSugar() );
+        // Assert.assertEquals( 499, (int) i.getCoffee() );
+
+        i.useIngredients( recipe2 );
+
+        /*
+         * Make sure that all of the inventory fields are now properly updated
+         */
+
+        Assert.assertEquals( 480, (int) i.getChocolate() );
+        Assert.assertEquals( 460, (int) i.getMilk() );
+        Assert.assertEquals( 490, (int) i.getSugar() );
+        Assert.assertEquals( 498, (int) i.getCoffee() );
+
     }
 
     @Test
