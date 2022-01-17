@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
+import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 
 @RunWith ( SpringRunner.class )
@@ -32,6 +33,57 @@ public class InventoryTest {
         ivt.setSugar( 500 );
 
         inventoryService.save( ivt );
+    }
+
+    @Test
+    @Transactional
+    public void testConsumeInventory () {
+        final Inventory i = inventoryService.getInventory();
+
+        final Recipe recipe = new Recipe();
+        recipe.setName( "Delicious Not-Coffee" );
+        recipe.setChocolate( 10 );
+        recipe.setMilk( 20 );
+        recipe.setSugar( 5 );
+        recipe.setCoffee( 1 );
+
+        recipe.setPrice( 5 );
+
+        // Recipe #2
+        final Recipe recipe2 = new Recipe();
+        recipe2.setName( "Delicious Not-Coffee2" );
+        recipe2.setChocolate( 10 );
+        recipe2.setMilk( 20 );
+        recipe2.setSugar( 5 );
+        recipe2.setCoffee( 1 );
+
+        recipe2.setPrice( 5 );
+
+        // Recipe #3
+        final Recipe recipe3 = new Recipe();
+        recipe3.setName( "Delicious Not-Coffee3" );
+        recipe3.setChocolate( 10 );
+        recipe3.setMilk( 20 );
+        recipe3.setSugar( 5 );
+        recipe3.setCoffee( 1 );
+
+        recipe3.setPrice( 5 );
+
+        i.useIngredients( recipe );
+
+        i.useIngredients( recipe2 );
+
+        i.useIngredients( recipe3 );
+
+        /*
+         * Make sure that all of the inventory fields are now properly updated
+         */
+
+        Assert.assertEquals( 470, (int) i.getChocolate() );
+        Assert.assertEquals( 440, (int) i.getMilk() );
+        Assert.assertEquals( 485, (int) i.getSugar() );
+        Assert.assertEquals( 497, (int) i.getCoffee() );
+
     }
 
     @Test
