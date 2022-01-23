@@ -1,7 +1,9 @@
 package edu.ncsu.csc.CoffeeMaker.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -48,7 +50,6 @@ public class APITest {
      */
     @Before
     public void setup () {
-
         mvc = MockMvcBuilders.webAppContextSetup( context ).build();
     }
 
@@ -56,18 +57,43 @@ public class APITest {
     @Transactional
     public void testGettingRecipes () throws Exception {
 
-        final Recipe r = new Recipe();
-        r.setChocolate( 5 );
-        r.setCoffee( 3 );
-        r.setMilk( 4 );
-        r.setSugar( 8 );
-        r.setPrice( 10 );
-        r.setName( "Mocha" );
+        // final Recipe r = new Recipe();
+        // r.setChocolate( 5 );
+        // r.setCoffee( 3 );
+        // r.setMilk( 4 );
+        // r.setSugar( 8 );
+        // r.setPrice( 10 );
+        // r.setName( "Mocha" );
+        //
+        // mvc.perform( post( "/api/v1/recipes" ).contentType(
+        // MediaType.APPLICATION_JSON )
+        // .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk()
+        // );
+        // final String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo(
+        // print() ).andExpect( status().isOk() )
+        // .andReturn().getResponse().getContentAsString();
+        // assertTrue( recipe.contains( "Mocha" ) );
 
-        mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
-        final String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
+        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
                 .andReturn().getResponse().getContentAsString();
+
+        /* Figure out if the recipe we want is present */
+        if ( !recipe.contains( "Mocha" ) ) {
+            final Recipe r = new Recipe();
+            r.setChocolate( 5 );
+            r.setCoffee( 3 );
+            r.setMilk( 4 );
+            r.setSugar( 8 );
+            r.setPrice( 10 );
+            r.setName( "Mocha" );
+
+            mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
+                    .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
+
+            recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() ).andReturn()
+                    .getResponse().getContentAsString();
+        }
+
         assertTrue( recipe.contains( "Mocha" ) );
 
     }
@@ -121,6 +147,37 @@ public class APITest {
         mvc.perform( post( String.format( "/api/v1/makecoffee/%s", "Mocha" ) ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( 20 ) ) ).andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.message" ).value( 10 ) );
+
+    }
+
+    @Test
+    @Transactional
+    public void testDeleteRecipe () throws Exception {
+
+        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
+                .andReturn().getResponse().getContentAsString();
+        assertFalse( recipe.contains( "Mocha" ) );
+
+        final Recipe r = new Recipe();
+        r.setChocolate( 5 );
+        r.setCoffee( 3 );
+        r.setMilk( 4 );
+        r.setSugar( 8 );
+        r.setPrice( 10 );
+        r.setName( "Mocha" );
+
+        mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
+
+        recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() ).andReturn()
+                .getResponse().getContentAsString();
+        assertTrue( recipe.contains( "Mocha" ) );
+
+        mvc.perform( delete( String.format( "/api/v1/recipes/%s", "Mocha" ) ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
+        recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() ).andReturn()
+                .getResponse().getContentAsString();
+        assertFalse( recipe.contains( "Mocha" ) );
 
     }
 
