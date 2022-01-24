@@ -307,4 +307,75 @@ public class RecipeTest {
         return recipe;
     }
 
+    @Test
+    @Transactional
+    public void testUpdateRecipe () {
+
+        Assert.assertEquals( "There should be no Recipes in the CoffeeMaker", 0, service.findAll().size() );
+
+        final Recipe r1 = createRecipe( "Coffee", 50, 3, 1, 1, 0 );
+        service.save( r1 );
+
+        Recipe retrieved = service.findByName( "Coffee" );
+
+        Assert.assertEquals( 50, (int) retrieved.getPrice() );
+        Assert.assertEquals( 3, (int) retrieved.getCoffee() );
+        Assert.assertEquals( 1, (int) retrieved.getMilk() );
+        Assert.assertEquals( 1, (int) retrieved.getSugar() );
+        Assert.assertEquals( 0, (int) retrieved.getChocolate() );
+
+        final Recipe r2 = createRecipe( "newCoffee", 70, 5, 2, 2, 1 );
+        r1.updateRecipe( r2 );
+        service.save( r1 );
+        retrieved = service.findByName( "Coffee" );
+        Assert.assertEquals( 70, (int) retrieved.getPrice() );
+        Assert.assertEquals( 5, (int) retrieved.getCoffee() );
+        Assert.assertEquals( 2, (int) retrieved.getMilk() );
+        Assert.assertEquals( 2, (int) retrieved.getSugar() );
+        Assert.assertEquals( 1, (int) retrieved.getChocolate() );
+
+        Assert.assertEquals( "Updating a recipe shouldn't duplicate it", 1, service.count() );
+
+    }
+
+    @Test
+    @Transactional
+    public void testToString () {
+
+        final Recipe r1 = createRecipe( "Coffee", 50, 3, 1, 1, 0 );
+        Assert.assertEquals( "Coffee", r1.toString() );
+
+    }
+
+    @Test
+    @Transactional
+    public void testEquals () {
+
+        final Recipe r1 = createRecipe( "Coffee", 50, 3, 1, 1, 0 );
+        Assert.assertFalse( r1.equals( service.findAll() ) );
+        Assert.assertFalse( r1.equals( null ) );
+
+        final Recipe r2 = createRecipe( null, 50, 3, 1, 1, 2 );
+        Assert.assertFalse( r2.equals( r1 ) );
+
+        r2.setName( "Mocha" );
+        Assert.assertFalse( r1.equals( r2 ) );
+
+        final Recipe r3 = createRecipe( "Coffee", 70, 4, 1, 1, 2 );
+        Assert.assertTrue( r1.equals( r3 ) );
+
+    }
+
+    @Test
+    @Transactional
+    public void testCheckRecipe () {
+
+        final Recipe r1 = createRecipe( "Coffee", 50, 0, 0, 0, 0 );
+        Assert.assertTrue( r1.checkRecipe() );
+
+        r1.setMilk( 3 );
+        Assert.assertFalse( r1.checkRecipe() );
+
+    }
+
 }
