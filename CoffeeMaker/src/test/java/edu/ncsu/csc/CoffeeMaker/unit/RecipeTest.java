@@ -378,4 +378,41 @@ public class RecipeTest {
 
     }
 
+    @Test
+    @Transactional
+    public void testCheckRecipeByID () {
+
+        final Recipe r1 = createRecipe( "test 1", 50, 0, 0, 0, 0 );
+        service.save( r1 );
+
+        final Recipe r2 = createRecipe( "test 2", 50, 0, 0, 0, 0 );
+        service.save( r2 );
+        final long temp_id_1 = service.findAll().get( 0 ).getId();
+        final long temp_id_2 = service.findAll().get( 1 ).getId();
+        Assert.assertTrue( service.existsById( temp_id_1 ) );
+        Assert.assertTrue( service.existsById( temp_id_2 ) );
+        service.delete( r1 );
+        Assert.assertFalse( service.existsById( 123L ) );
+
+    }
+
+    @Test
+    @Transactional
+    public void testFindRecipeByID () {
+
+        final Recipe r1 = createRecipe( "test 1", 50, 0, 0, 0, 0 );
+        service.save( r1 );
+
+        final Recipe r2 = createRecipe( "test 2", 50, 0, 0, 0, 0 );
+        service.save( r2 );
+        final long temp_id_1 = service.findAll().get( 0 ).getId();
+        final long temp_id_2 = service.findAll().get( 1 ).getId();
+
+        Assert.assertEquals( "test 1", service.findById( temp_id_1 ).getName() );
+        Assert.assertEquals( "test 2", service.findById( temp_id_2 ).getName() );
+        service.delete( r1 );
+        Assert.assertNull( service.findById( (long) 1 ) );
+
+    }
+
 }

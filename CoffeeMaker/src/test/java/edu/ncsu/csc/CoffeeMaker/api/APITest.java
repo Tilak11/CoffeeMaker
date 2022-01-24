@@ -100,6 +100,49 @@ public class APITest {
 
     @Test
     @Transactional
+    public void testGettingRecipesByName () throws Exception {
+
+        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
+                .andReturn().getResponse().getContentAsString();
+
+        final Recipe r = new Recipe();
+        r.setChocolate( 5 );
+        r.setCoffee( 3 );
+        r.setMilk( 4 );
+        r.setSugar( 8 );
+        r.setPrice( 10 );
+        r.setName( "Mocha" );
+
+        mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
+
+        final Recipe r1 = new Recipe();
+        r1.setChocolate( 2 );
+        r1.setCoffee( 5 );
+        r1.setMilk( 7 );
+        r1.setSugar( 9 );
+        r1.setPrice( 8 );
+        r1.setName( "Tea" );
+
+        mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( r1 ) ) ).andExpect( status().isOk() );
+
+        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Mocha" ) ) ).andDo( print() )
+                .andExpect( status().isOk() ).andReturn().getResponse().getContentAsString();
+
+        assertTrue( recipe.contains( "Mocha" ) );
+        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Tea" ) ) ).andDo( print() )
+                .andExpect( status().isOk() ).andReturn().getResponse().getContentAsString();
+
+        assertTrue( recipe.contains( "Tea" ) );
+
+        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Coffee" ) ) ).andDo( print() )
+                .andExpect( status().isNotFound() ).andReturn().getResponse().getContentAsString();
+        assertEquals( "{\"status\":\"failed\",\"message\":\"No recipe found with name Coffee\"}", recipe );
+    }
+
+    @Test
+    @Transactional
     public void testAddingInventory () throws Exception {
 
         final Inventory r = new Inventory();
