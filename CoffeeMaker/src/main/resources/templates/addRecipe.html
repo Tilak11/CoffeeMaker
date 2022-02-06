@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=3, initial-scale=1.0">
+	<title>Add Recipe</title>
+	<h1><i>Add Recipe</i></h1>
+	<style>
+		label {
+		  display: inline-block;
+		  width: 150px;
+		  text-align: left;
+		}
+	  </style>
+
+</head>
+<body style="background-color:rgb(130, 222, 235);">
+	<form>
+		
+		<label >Recipe name: </label>
+		<input type="text" id="name" name="rname"><br><br>
+		<label  text-align: right >Recipe Price:  </label>  
+		<input type="number" min="1" id="amt" name="iamt" ><br> <br> <br>
+		<label style="font-size:18px; font-weight:bold">Select Ingredients:</label><br><br><br>
+		
+		<label > Milk </label>
+    <input type="number" min="1" id="amt" name="iamt" ><br><br>
+		<label >Coffee: </label>
+		<input type="number" min="1" id="amt" name="iamt" ><br><br>
+		<label >Sugar: </label>
+		<input type="number" min="1" id="amt" name="iamt" ><br><br>
+		<label >Chocolate: </label>
+		<input type="number" min="1" id="amt" name="iamt" ><br><br>
+		<label >Caramel: </label> 
+		<input type="number" min="1" id="amt" name="iamt" ><br><br>
+		
+		<button type="button" onclick="location.href='/index'" style="background-color:rgb(240, 165, 52);width:70px">Home</button>
+		<button type="reset" vaue="Reset" style="background-color:rgb(240, 165, 52);width:80px;margin-left: 5%;">Clear form</button>
+		<button type="submit" value="Submit" style="background-color:rgb(126, 204, 37);width:70px;margin-left: 1%;">Save</button>
+	  </form>
+	
+</body>
+</html>
