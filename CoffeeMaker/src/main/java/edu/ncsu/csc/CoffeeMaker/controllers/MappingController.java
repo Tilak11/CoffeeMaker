@@ -94,4 +94,17 @@ public class MappingController {
         return "makecoffee";
     }
 
+    /**
+     * On a POST request to /ingredient, the MakeCoffeeController will return
+     * /src/main/resources/templates/ingredient.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/ingredient", "/ingredient.html" } )
+    public String addIngredientForm ( final Model model ) {
+        return "ingredient";
+    }
+
 }
