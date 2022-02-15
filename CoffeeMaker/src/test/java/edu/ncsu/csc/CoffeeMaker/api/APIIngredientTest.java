@@ -7,9 +7,13 @@ import javax.transaction.Transactional;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -19,7 +23,10 @@ import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 
-class APIIngredientTest {
+@RunWith ( SpringRunner.class )
+@SpringBootTest
+@AutoConfigureMockMvc
+public class APIIngredientTest {
 
     /**
      * MockMvc uses Spring's testing framework to handle requests to the REST
@@ -57,7 +64,7 @@ class APIIngredientTest {
     @Transactional
     public void testIngredientAPI () throws Exception {
 
-        // service.deleteAll();
+        iservice.deleteAll();
 
         final Ingredient ingredient = new Ingredient( IngredientType.COFFEE, 500 );
 
@@ -71,7 +78,7 @@ class APIIngredientTest {
     @Test
     @Transactional
     public void testAddIngredient2 () throws Exception {
-        // service.deleteAll();
+        iservice.deleteAll();
 
         /*
          * Tests a Ingredient with a duplicate name to make sure it's rejected
@@ -92,7 +99,7 @@ class APIIngredientTest {
     @Test
     @Transactional
     public void testAddIngredient15 () throws Exception {
-        // service.deleteAll();
+        iservice.deleteAll();
 
         /* Tests to make sure that our cap of 3 Ingredients is enforced */
 

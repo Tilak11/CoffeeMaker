@@ -11,7 +11,7 @@ import edu.ncsu.csc.CoffeeMaker.repositories.IngredientRepository;
 
 @Component
 @Transactional
-public class IngredientService extends Service {
+public class IngredientService extends Service<Ingredient, Long> {
 
     @Autowired
     private IngredientRepository repo;
