@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
+import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
@@ -53,20 +54,18 @@ public class APICoffeeTest {
 
         final Inventory ivt = iService.getInventory();
 
-        ivt.setChocolate( 15 );
-        ivt.setCoffee( 15 );
-        ivt.setMilk( 15 );
-        ivt.setSugar( 15 );
+        ivt.addIngredient( new Ingredient( "COFFEE", 15 ) );
+        ivt.addIngredient( new Ingredient( "MILK", 15 ) );
+        ivt.addIngredient( new Ingredient( "PUMPKIN_SPICE", 15 ) );
 
         iService.save( ivt );
 
         final Recipe recipe = new Recipe();
         recipe.setName( "Coffee" );
         recipe.setPrice( 50 );
-        recipe.setCoffee( 3 );
-        recipe.setMilk( 1 );
-        recipe.setSugar( 1 );
-        recipe.setChocolate( 0 );
+        recipe.addIngredient( new Ingredient( "COFFEE", 3 ) );
+        recipe.addIngredient( new Ingredient( "MILK", 1 ) );
+        recipe.addIngredient( new Ingredient( "PUMPKIN_SPICE", 1 ) );
         service.save( recipe );
     }
 
@@ -101,7 +100,7 @@ public class APICoffeeTest {
         /* Insufficient inventory */
 
         final Inventory ivt = iService.getInventory();
-        ivt.setCoffee( 0 );
+        ivt.getInventoryList().get( 0 ).setAmount( 0 );
         iService.save( ivt );
 
         final String name = "Coffee";

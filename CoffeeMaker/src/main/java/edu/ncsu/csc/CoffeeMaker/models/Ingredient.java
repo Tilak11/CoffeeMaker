@@ -3,28 +3,25 @@ package edu.ncsu.csc.CoffeeMaker.models;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
-
-import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 
 @Entity
 public class Ingredient extends DomainObject {
 
     @Id
     @GeneratedValue
-    private Long           id;
+    private Long    id;
 
-    @Enumerated ( EnumType.STRING )
-    private IngredientType ingredient;
+    // @Enumerated ( EnumType.STRING )
+    // private IngredientType ingredient;
+    private String  ingredient;
 
     @Min ( 0 )
-    private Integer        amount;
+    private Integer amount;
 
-    public Ingredient ( IngredientType ingredient, int amount ) {
+    public Ingredient ( final String ingredient, final int amount ) {
         super();
         this.ingredient = ingredient;
         this.amount = amount;
@@ -39,11 +36,11 @@ public class Ingredient extends DomainObject {
 
     }
 
-    public IngredientType getIngredient () {
+    public String getIngredient () {
         return ingredient;
     }
 
-    public void setIngredient ( IngredientType ingredient ) {
+    public void setIngredient ( final String ingredient ) {
         this.ingredient = ingredient;
     }
 
@@ -51,11 +48,11 @@ public class Ingredient extends DomainObject {
         return amount;
     }
 
-    public void setAmount ( int amount ) {
+    public void setAmount ( final int amount ) {
         this.amount = amount;
     }
 
-    public void setId ( Long id ) {
+    public void setId ( final Long id ) {
         this.id = id;
     }
 

@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
-import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
 @RunWith ( SpringRunner.class )
@@ -280,9 +279,9 @@ public class RecipeTest {
         final Recipe recipe = new Recipe();
         recipe.setName( name );
         recipe.setPrice( price );
-        recipe.addIngredient( new Ingredient( IngredientType.COFFEE, coffee ) );
-        recipe.addIngredient( new Ingredient( IngredientType.MILK, milk ) );
-        recipe.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, pumpkinSpice ) );
+        recipe.addIngredient( new Ingredient( "COFFEE", coffee ) );
+        recipe.addIngredient( new Ingredient( "MILK", milk ) );
+        recipe.addIngredient( new Ingredient( "PUMPKIN_SPICE", pumpkinSpice ) );
 
         return recipe;
     }
