@@ -20,7 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
-import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 
 @RunWith ( SpringRunner.class )
@@ -53,7 +52,7 @@ public class APIIngredientTest {
     public void ensureIngredient () throws Exception {
         iservice.deleteAll();
 
-        final Ingredient i = new Ingredient( IngredientType.COFFEE, 500 );
+        final Ingredient i = new Ingredient( "Coffee", 500 );
 
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( i ) ) ).andExpect( status().isOk() );
@@ -66,7 +65,7 @@ public class APIIngredientTest {
 
         iservice.deleteAll();
 
-        final Ingredient ingredient = new Ingredient( IngredientType.COFFEE, 500 );
+        final Ingredient ingredient = new Ingredient( "Coffee", 500 );
 
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( ingredient ) ) );
@@ -85,11 +84,11 @@ public class APIIngredientTest {
          */
 
         Assert.assertEquals( "There should be no ingredients in the CoffeeMaker", 0, iservice.findAll().size() );
-        final Ingredient i1 = new Ingredient( IngredientType.COFFEE, 500 );
+        final Ingredient i1 = new Ingredient( "Coffee", 500 );
 
         iservice.save( i1 );
 
-        final Ingredient i2 = new Ingredient( IngredientType.COFFEE, 500 );
+        final Ingredient i2 = new Ingredient( "Coffee", 500 );
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( i2 ) ) ).andExpect( status().is4xxClientError() );
 
@@ -105,17 +104,17 @@ public class APIIngredientTest {
 
         Assert.assertEquals( "There should be no Ingredients in the CoffeeMaker", 0, iservice.findAll().size() );
 
-        final Ingredient i1 = new Ingredient( IngredientType.COFFEE, 500 );
+        final Ingredient i1 = new Ingredient( "Coffee", 500 );
         iservice.save( i1 );
-        final Ingredient i2 = new Ingredient( IngredientType.MILK, 500 );
+        final Ingredient i2 = new Ingredient( "Milk", 500 );
         iservice.save( i2 );
-        final Ingredient i3 = new Ingredient( IngredientType.PUMPKIN_SPICE, 500 );
+        final Ingredient i3 = new Ingredient( "PumpkinSpice", 500 );
         iservice.save( i3 );
 
         Assert.assertEquals( "Creating three Ingredients should result in three Ingredients in the database", 3,
                 iservice.count() );
 
-        final Ingredient r4 = new Ingredient( IngredientType.MILK, 500 );
+        final Ingredient r4 = new Ingredient( "Milk", 500 );
 
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r4 ) ) ).andExpect( status().isConflict() );

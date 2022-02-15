@@ -59,7 +59,7 @@ public class APIInventoryController extends APIController {
         final Inventory inventoryCurrent = service.getInventory();
         for ( int j = 0; j < inventory.getInventoryList().size(); j++ ) {
             if ( !inventoryCurrent.addIngredient( inventory.getInventoryList().get( j ) ) ) {
-                return new ResponseEntity( errorResponse( inventory.getInventoryList().get( j ).getIngredient().name()
+                return new ResponseEntity( errorResponse( inventory.getInventoryList().get( j ).getIngredient()
                         + " cannot be added due to a client error" ), HttpStatus.BAD_REQUEST );
             }
         }

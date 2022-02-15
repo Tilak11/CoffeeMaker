@@ -15,7 +15,6 @@ import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
-import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 
 @RunWith ( SpringRunner.class )
@@ -30,10 +29,10 @@ public class InventoryTest {
     public void setup () {
         final Inventory ivt = inventoryService.getInventory();
 
-        ivt.addIngredient( new Ingredient( IngredientType.COFFEE, 500 ) );
+        ivt.addIngredient( new Ingredient( "COFFEE", 500 ) );
 
-        ivt.addIngredient( new Ingredient( IngredientType.MILK, 500 ) );
-        ivt.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 500 ) );
+        ivt.addIngredient( new Ingredient( "MILK", 500 ) );
+        ivt.addIngredient( new Ingredient( "PUMPKIN_SPICE", 500 ) );
 
         inventoryService.save( ivt );
         assertEquals( 3, ivt.getInventoryList().size() );
@@ -52,13 +51,13 @@ public class InventoryTest {
     @Transactional
     public void testConsumeInventory () {
         final Inventory i = inventoryService.getInventory();
-        final IngredientType it = null;
+
         final Recipe recipe = new Recipe();
         recipe.setName( "Delicious Not-Coffee" );
-        recipe.addIngredient( new Ingredient( it.COFFEE, 10 ) );
+        recipe.addIngredient( new Ingredient( "COFFEE", 10 ) );
 
-        recipe.addIngredient( new Ingredient( it.MILK, 20 ) );
-        recipe.addIngredient( new Ingredient( it.PUMPKIN_SPICE, 5 ) );
+        recipe.addIngredient( new Ingredient( "MILK", 20 ) );
+        recipe.addIngredient( new Ingredient( "PUMPKIN_SPICE", 5 ) );
 
         recipe.setPrice( 5 );
         // for ( int j = 0; j < i.getIngredientsList().size(); j++ ) {
@@ -76,10 +75,10 @@ public class InventoryTest {
         // Recipe #2
         final Recipe recipe2 = new Recipe();
         recipe2.setName( "Delicious Not-Coffee2" );
-        recipe2.addIngredient( new Ingredient( it.COFFEE, 10 ) );
+        recipe2.addIngredient( new Ingredient( "COFFEE", 10 ) );
 
-        recipe2.addIngredient( new Ingredient( it.MILK, 20 ) );
-        recipe2.addIngredient( new Ingredient( it.PUMPKIN_SPICE, 5 ) );
+        recipe2.addIngredient( new Ingredient( "MILK", 20 ) );
+        recipe2.addIngredient( new Ingredient( "PUMPKIN_SPICE", 5 ) );
 
         recipe2.setPrice( 15 );
         i.useIngredients( recipe2 );
@@ -87,10 +86,10 @@ public class InventoryTest {
         // Recipe #3
         final Recipe recipe3 = new Recipe();
         recipe3.setName( "Delicious Not-Coffee3" );
-        recipe3.addIngredient( new Ingredient( it.COFFEE, 10 ) );
+        recipe3.addIngredient( new Ingredient( "COFFEE", 10 ) );
 
-        recipe3.addIngredient( new Ingredient( it.MILK, 20 ) );
-        recipe3.addIngredient( new Ingredient( it.PUMPKIN_SPICE, 5 ) );
+        recipe3.addIngredient( new Ingredient( "MILK", 20 ) );
+        recipe3.addIngredient( new Ingredient( "PUMPKIN_SPICE", 5 ) );
 
         recipe3.setPrice( 50 );
         i.useIngredients( recipe3 );
@@ -106,10 +105,10 @@ public class InventoryTest {
     public void testAddInventory1 () {
         final Inventory ivt = inventoryService.getInventory();
 
-        ivt.addIngredient( new Ingredient( IngredientType.COFFEE, 10 ) );
+        ivt.addIngredient( new Ingredient( "COFFEE", 10 ) );
 
-        ivt.addIngredient( new Ingredient( IngredientType.MILK, 20 ) );
-        ivt.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 5 ) );
+        ivt.addIngredient( new Ingredient( "MILK", 20 ) );
+        ivt.addIngredient( new Ingredient( "PUMPKIN_SPICE", 5 ) );
         assertEquals( 510, ivt.getInventoryList().get( 0 ).getAmount() );
         assertEquals( 520, ivt.getInventoryList().get( 1 ).getAmount() );
         assertEquals( 505, ivt.getInventoryList().get( 2 ).getAmount() );

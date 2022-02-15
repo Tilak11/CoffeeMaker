@@ -70,23 +70,22 @@ public class APIIngredientController extends APIController {
     @PostMapping ( BASE_PATH + "/ingredients" )
     public ResponseEntity createIngredient ( @RequestBody final Ingredient ingredient ) {
 
-        final Ingredient db = ingredientService.findByIngredient( ingredient.getIngredient().name() );
+        final Ingredient db = ingredientService.findByIngredient( ingredient.getIngredient() );
 
         if ( null != db ) {
             return new ResponseEntity(
-                    errorResponse(
-                            "Ingredient with the name " + ingredient.getIngredient().name() + " already exists" ),
+                    errorResponse( "Ingredient with the name " + ingredient.getIngredient() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
 
         try {
             ingredientService.save( ingredient );
-            return new ResponseEntity( successResponse( ingredient.getIngredient().name() + " successfully created" ),
-                    HttpStatus.CREATED );
+            return new ResponseEntity( successResponse( ingredient.getIngredient() + " successfully created" ),
+                    HttpStatus.OK );
         }
         catch ( final Exception e ) {
             return new ResponseEntity(
-                    errorResponse( ingredient.getIngredient().name() + " cannot be created due to a client error" ),
+                    errorResponse( ingredient.getIngredient() + " cannot be created due to a client error" ),
                     HttpStatus.BAD_REQUEST ); // HttpStatus.FORBIDDEN
             // would be OK
             // too.

@@ -22,7 +22,6 @@ import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
-import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
@@ -55,18 +54,18 @@ public class APICoffeeTest {
 
         final Inventory ivt = iService.getInventory();
 
-        ivt.addIngredient( new Ingredient( IngredientType.COFFEE, 15 ) );
-        ivt.addIngredient( new Ingredient( IngredientType.MILK, 15 ) );
-        ivt.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 15 ) );
+        ivt.addIngredient( new Ingredient( "COFFEE", 15 ) );
+        ivt.addIngredient( new Ingredient( "MILK", 15 ) );
+        ivt.addIngredient( new Ingredient( "PUMPKIN_SPICE", 15 ) );
 
         iService.save( ivt );
 
         final Recipe recipe = new Recipe();
         recipe.setName( "Coffee" );
         recipe.setPrice( 50 );
-        recipe.addIngredient( new Ingredient( IngredientType.COFFEE, 3 ) );
-        recipe.addIngredient( new Ingredient( IngredientType.MILK, 1 ) );
-        recipe.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 1 ) );
+        recipe.addIngredient( new Ingredient( "COFFEE", 3 ) );
+        recipe.addIngredient( new Ingredient( "MILK", 1 ) );
+        recipe.addIngredient( new Ingredient( "PUMPKIN_SPICE", 1 ) );
         service.save( recipe );
     }
 
