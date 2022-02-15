@@ -76,8 +76,7 @@ public class APIRecipeController extends APIController {
     @PostMapping ( BASE_PATH + "/recipes" )
     public ResponseEntity createRecipe ( @RequestBody final Recipe recipe ) {
         if ( null != service.findByName( recipe.getName() ) ) {
-            return new ResponseEntity(
-                    successResponse( "Recipe with the name " + recipe.getName() + " already exists" ),
+            return new ResponseEntity( errorResponse( "Recipe with the name " + recipe.getName() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
         if ( service.findAll().size() < 3 ) {

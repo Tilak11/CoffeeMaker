@@ -19,7 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
+import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
+import edu.ncsu.csc.CoffeeMaker.models.enums.IngredientType;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
 @RunWith ( SpringRunner.class )
@@ -52,13 +54,7 @@ public class APIRecipeTest {
     public void ensureRecipe () throws Exception {
         service.deleteAll();
 
-        final Recipe r = new Recipe();
-        r.setChocolate( 5 );
-        r.setCoffee( 3 );
-        r.setMilk( 4 );
-        r.setSugar( 8 );
-        r.setPrice( 10 );
-        r.setName( "Mocha" );
+        final Recipe r = createRecipe( "Mocha", 10, 3, 4, 8, 5 );
 
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
@@ -71,14 +67,7 @@ public class APIRecipeTest {
 
         service.deleteAll();
 
-        final Recipe recipe = new Recipe();
-        recipe.setName( "Delicious Not-Coffee" );
-        recipe.setChocolate( 10 );
-        recipe.setMilk( 20 );
-        recipe.setSugar( 5 );
-        recipe.setCoffee( 1 );
-
-        recipe.setPrice( 5 );
+        final Recipe recipe = createRecipe( "Delicious Not-Coffee", 5, 1, 20, 5, 10 );
 
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( recipe ) ) );
@@ -90,6 +79,7 @@ public class APIRecipeTest {
     @Test
     @Transactional
     public void testAddRecipe2 () throws Exception {
+        service.deleteAll();
 
         /* Tests a recipe with a duplicate name to make sure it's rejected */
 
@@ -109,6 +99,7 @@ public class APIRecipeTest {
     @Test
     @Transactional
     public void testAddRecipe15 () throws Exception {
+        service.deleteAll();
 
         /* Tests to make sure that our cap of 3 recipes is enforced */
 
@@ -133,14 +124,13 @@ public class APIRecipeTest {
     }
 
     private Recipe createRecipe ( final String name, final Integer price, final Integer coffee, final Integer milk,
-            final Integer sugar, final Integer chocolate ) {
+            final Integer pumpkinSpice, final Integer chocolate ) {
         final Recipe recipe = new Recipe();
         recipe.setName( name );
         recipe.setPrice( price );
-        recipe.setCoffee( coffee );
-        recipe.setMilk( milk );
-        recipe.setSugar( sugar );
-        recipe.setChocolate( chocolate );
+        recipe.addIngredient( new Ingredient( IngredientType.COFFEE, coffee ) );
+        recipe.addIngredient( new Ingredient( IngredientType.MILK, milk ) );
+        recipe.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, pumpkinSpice ) );
 
         return recipe;
     }

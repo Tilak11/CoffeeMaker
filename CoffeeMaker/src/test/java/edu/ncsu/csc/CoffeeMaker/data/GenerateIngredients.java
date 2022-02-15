@@ -1,5 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.data;
 
+import java.util.ArrayList;
+
 import javax.transaction.Transactional;
 
 import org.junit.Assert;
@@ -23,6 +25,7 @@ public class GenerateIngredients {
     @Autowired
     private IngredientService ingredientService;
 
+    @SuppressWarnings ( "unchecked" )
     @Test
     @Transactional
     public void testCreateIngredients () {
@@ -35,6 +38,11 @@ public class GenerateIngredients {
         final Ingredient i2 = new Ingredient( IngredientType.MILK, 3 );
 
         ingredientService.save( i2 );
+
+        final ArrayList<Ingredient> list = (ArrayList<Ingredient>) ingredientService.findAll();
+        for ( int i = 0; i < list.size(); i++ ) {
+            System.out.println( list.get( i ).toString() );
+        }
 
         Assert.assertEquals( 2, ingredientService.count() );
 
