@@ -26,7 +26,7 @@ public class Inventory extends DomainObject {
     private Long                   id;
 
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    private final List<Ingredient> inventoryList;
+    private List<Ingredient> inventoryList;
 
     /**
      * Empty constructor for Hibernate
@@ -171,6 +171,12 @@ public class Inventory extends DomainObject {
     public List<Ingredient> getInventoryList () {
         return inventoryList;
     }
+    
+    
+    public void setInventoryList (List<Ingredient> list) {
+        this.inventoryList = list;
+    }
+
 
     /**
      * Returns a string describing the current contents of the inventory.

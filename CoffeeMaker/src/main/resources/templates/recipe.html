@@ -47,8 +47,8 @@
 				}
 			}
 
-			$http.get("/api/v1/ingredients").then(function(response) {
-				$scope.list = response.data;
+			$http.get("/api/v1/inventory").then(function(response) {
+				$scope.list = response.data.inventoryList;
 				console.log(list);
 			}, function(rejection) {
 				console.error("Error while getting Inventory");
@@ -59,12 +59,7 @@
 
 				$scope.reset();
 				
-				$http.get("/api/v1/recipes").then(function(response) {
-					$scope.recipes = response.data;
-					console.log(recipes);
-				}, function(rejection) {
-					console.error("Error while getting Inventory");
-				})
+			
 			}
 
 			$scope.addRecipe = function() {
@@ -88,17 +83,16 @@
 					if($scope.recipe.ingredientsList[i].ingredient === ing.ingredient){
 						$scope.recipe.ingredientsList[i].amount = ing.amount;
 						found = true;
-						console.log("inif");
 						break;
 					}
 				}
 				if(!found){
 					console.log("in not");
 				if(ing.checked){
-				$scope.recipe.ingredientsList.push({
+					$scope.recipe.ingredientsList.push({
 					ingredient : ing.ingredient,
 					amount : ing.amount
-				});
+					});
 				}}
 				console.log($scope.recipe);
 					
@@ -190,7 +184,7 @@
 					<!-- A checkbox displaying the progress -->
 					<input type='checkbox' ng-model="ingredient.checked" ng-change='removeIngredient(ingredient)' />
 					<!-- An information of a task -->
-					<span>{{ingredient.ingredient}} and {{ingredient.id}}</span>
+					<span>{{ingredient.ingredient}}</span>
 					<div class='input-form'>
 						<input type='text' ng-model='ingredient.amount' ng-hide="true"
 							ng-show="ingredient.checked" placeholder="Enter amount" required="0" />

@@ -37,6 +37,9 @@
 			console.log("Hit!");
 
 			$scope.reset = function() {
+				$scope.inventory = {
+						inventoryList : []
+					};
 				$scope.ingredient = {
 					ingredient : '',
 					amount:''
@@ -44,6 +47,8 @@
 				if (undefined != $scope.addIngredientForm) {
 					$scope.addIngredientForm.$setPristine(); // reset Form
 				}
+				
+				
 			}
 
 			$scope.submit = function() { 
@@ -63,6 +68,15 @@
 						}, function(rejection) {
 							console.error("Error while adding ingredient");
 						});
+				$scope.inventory.inventoryList.push($scope.ingredient);
+				$http.put("/api/v1/inventory", $scope.inventory).then(
+						function(success) {
+							$scope.success = true;
+							$scope.failure = false;
+						}, function(rejection) {
+							console.error("Error while adding ingredient");
+						});
+				
 				
 			}
 

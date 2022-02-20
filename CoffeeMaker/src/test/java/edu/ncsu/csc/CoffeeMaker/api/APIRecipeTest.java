@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
+import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
 @RunWith ( SpringRunner.class )
@@ -39,6 +40,9 @@ public class APIRecipeTest {
 
     @Autowired
     private RecipeService         service;
+    @Autowired
+    private IngredientService         iservice;
+
 
     /**
      * Sets up the tests.
@@ -67,9 +71,14 @@ public class APIRecipeTest {
         service.deleteAll();
 
         final Recipe recipe = createRecipe( "Delicious Not-Coffee", 5, 1, 20, 5, 10 );
+        iservice.save(new Ingredient( "COFFEE", 1 ) );
+        iservice.save(new Ingredient( "MILK", 20 ) );
+        iservice.save(new Ingredient( "PUMPKIN_SPICE", 5 ) );
 
+        System.out.println("hiiiiiiiiiiiiiiiiiiii "+ iservice.count());
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( recipe ) ) );
+        System.out.println("hiiiiiiiiiiiiiiiiiiii "+ iservice.count());
 
         Assert.assertEquals( 1, (int) service.count() );
 

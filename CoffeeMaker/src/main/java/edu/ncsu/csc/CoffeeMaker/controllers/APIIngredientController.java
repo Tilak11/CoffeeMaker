@@ -71,14 +71,15 @@ public class APIIngredientController extends APIController {
     public ResponseEntity createIngredient ( @RequestBody final Ingredient ingredient ) {
 
         final Ingredient db = ingredientService.findByIngredient( ingredient.getIngredient() );
-
         if ( null != db ) {
+        	System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
             return new ResponseEntity(
                     errorResponse( "Ingredient with the name " + ingredient.getIngredient() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
 
         try {
+        	System.out.println("------_-----------> "+ingredient.getIngredient());
             ingredientService.save( ingredient );
             return new ResponseEntity( successResponse( ingredient.getIngredient() + " successfully created" ),
                     HttpStatus.OK );
