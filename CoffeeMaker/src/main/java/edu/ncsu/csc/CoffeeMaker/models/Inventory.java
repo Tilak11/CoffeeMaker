@@ -26,7 +26,7 @@ public class Inventory extends DomainObject {
     private Long                   id;
 
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    private final List<Ingredient> inventoryList;
+    private List<Ingredient> inventoryList;
 
     /**
      * Empty constructor for Hibernate
@@ -87,7 +87,7 @@ public class Inventory extends DomainObject {
     // */
     public boolean enoughIngredients ( final Recipe r ) {
         boolean isEnough = true;
-        final List<Ingredient> ingredientList = r.getRecipeIngredients();
+        final List<Ingredient> ingredientList = r.getIngredientsList();
         for ( int k = 0; k < ingredientList.size(); k++ ) {
             for ( int i = 0; i < inventoryList.size(); i++ ) {
                 if ( inventoryList.get( i ).getIngredient().equals( ingredientList.get( k ).getIngredient() ) ) {
@@ -113,7 +113,7 @@ public class Inventory extends DomainObject {
     public boolean useIngredients ( final Recipe r ) {
 
         if ( enoughIngredients( r ) ) {
-            final List<Ingredient> ingredientList = r.getRecipeIngredients();
+            final List<Ingredient> ingredientList = r.getIngredientsList();
             for ( int k = 0; k < ingredientList.size(); k++ ) {
                 for ( int i = 0; i < inventoryList.size(); i++ ) {
                     if ( inventoryList.get( i ).getIngredient().equals( ingredientList.get( k ).getIngredient() ) ) {
@@ -171,6 +171,12 @@ public class Inventory extends DomainObject {
     public List<Ingredient> getInventoryList () {
         return inventoryList;
     }
+    
+    
+    public void setInventoryList (List<Ingredient> list) {
+        this.inventoryList = list;
+    }
+
 
     /**
      * Returns a string describing the current contents of the inventory.

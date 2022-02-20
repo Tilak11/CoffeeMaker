@@ -121,7 +121,7 @@ public class Recipe extends DomainObject {
     public void updateRecipe ( final Recipe r ) {
         this.name = r.getName();
         this.price = r.getPrice();
-        this.ingredientsList = r.getRecipeIngredients();
+        this.ingredientsList = r.getIngredientsList();
     }
 
     /**
@@ -180,8 +180,13 @@ public class Recipe extends DomainObject {
 
     }
 
-    public List<Ingredient> getRecipeIngredients () {
+    public List<Ingredient> getIngredientsList () {
         return ingredientsList;
+
+    }
+    
+    public void setIngredientsList (List<Ingredient> list) {
+        this.ingredientsList = list;
 
     }
 
