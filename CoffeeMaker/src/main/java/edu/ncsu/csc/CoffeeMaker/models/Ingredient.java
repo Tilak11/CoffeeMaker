@@ -59,7 +59,7 @@ public class Ingredient extends DomainObject {
     @Override
     public Serializable getId () {
         // TODO Auto-generated method stub
-        return null;
+        return id;
     }
 
 }

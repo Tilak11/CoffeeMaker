@@ -63,13 +63,7 @@
 						}, function(rejection) {
 							console.error("Error while adding ingredient");
 						});
-				$http.put("/api/v1/inventory", $scope.ingredient).then(
-						function(success) {
-							$scope.success = true;
-							$scope.failure = false;
-						}, function(rejection) {
-							console.error("Error while adding ingredient");
-						});
+				
 			}
 
 			$scope.reset();
@@ -97,7 +91,7 @@
 							<div class="col-md-7">
 								<input type="text" ng-model="ingredient.ingredient" name="name"
 									class="name form-control input-sm"
-									placeholder="Enter Ingredint name" required="0" />
+									placeholder="Enter Ingredient name" required="0" />
 								<div class="has-error" ng-show="addIngredientForm.$dirty">
 									<span ng-show="addIngredientForm.name.$error.required">This
 										is a required field</span> <span

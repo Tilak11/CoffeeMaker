@@ -49,6 +49,7 @@
 
 			$http.get("/api/v1/ingredients").then(function(response) {
 				$scope.list = response.data;
+				console.log(list);
 			}, function(rejection) {
 				console.error("Error while getting Inventory");
 			})
@@ -57,6 +58,13 @@
 				$scope.addRecipe();
 
 				$scope.reset();
+				
+				$http.get("/api/v1/recipes").then(function(response) {
+					$scope.recipes = response.data;
+					console.log(recipes);
+				}, function(rejection) {
+					console.error("Error while getting Inventory");
+				})
 			}
 
 			$scope.addRecipe = function() {
@@ -72,21 +80,37 @@
 						});
 			}
 			
-			$scope.addIngredient = function(ing, amt){
+			$scope.addIngredient = function(ing){
 				$scope.success = false;
 				$scope.failure = false;
+				var found = false;				
+				for(var i=0; i< $scope.recipe.ingredientsList.length; i++){
+					if($scope.recipe.ingredientsList[i].ingredient === ing.ingredient){
+						$scope.recipe.ingredientsList[i].amount = ing.amount;
+						found = true;
+						console.log("inif");
+						break;
+					}
+				}
+				if(!found){
+					console.log("in not");
+				if(ing.checked){
 				$scope.recipe.ingredientsList.push({
-					ingredient : ing,
-					amount : amt
+					ingredient : ing.ingredient,
+					amount : ing.amount
 				});
+				}}
 				console.log($scope.recipe);
+					
 				
 			}
-			$scope.removeIngredient = function(ing, amt){
-				
-				let index = $scope.recipe.ingredientsList.findIndex(item => item.Ingredient === ing);
+			$scope.removeIngredient = function(ing){
+				if(!ing.checked){
+					
+				let index = $scope.recipe.ingredientsList.findIndex(item => item.ingredient === ing.ingredient);
 				$scope.recipe.ingredientsList.splice(index, 1);
 				console.log($scope.recipe);
+				}
 				
 			}
 
@@ -144,36 +168,39 @@
 						</div>
 					</div>
 
-	
-
-					
 
 
 
-						<div class="row">
-								<div class="form-actions floatRight">
-									<input type="submit" value="Submit"
-										class="btn btn-primary btn-sm"
-										ng-disabled="addRecipeForm.$invalid" />
-									<button type="button" ng-click="reset()"
-										class="btn btn-warning btn-sm"
-										ng-disabled="addRecipeForm.$pristine">Reset Form</button>
-								</div>
-							</div>
-				</form>
-					<div ng-repeat='ingredient in list'>
-							<!-- A checkbox displaying the progress -->
-							<input type='checkbox' ng-model="checked"/>
-							<!-- An information of a task -->
-							<span>{{ingredient.ingredient}}</span>
-							<div class='input-form'>
-								<input type='number' ng-model='amount' ng-hide="true" ng-show="checked"  />
-								 <button ng-click='addIngredient(ingredient.ingredient, amount)' ng-hide="true" ng-show="checked">Add</button>
-								 <div ng-if = "!checked" ng-init="removeIngredient(ingredient.ingredient, amount)">
-								 
-								 		
-							</div>
+
+
+
+					<div class="row">
+						<div class="form-actions floatRight">
+							<input type="submit" value="Submit"
+								class="btn btn-primary btn-sm"
+								ng-disabled="addRecipeForm.$invalid" />
+							<button type="button" ng-click="reset()"
+								class="btn btn-warning btn-sm"
+								ng-disabled="addRecipeForm.$pristine">Reset Form</button>
 						</div>
+					</div>
+				</form>
+				<h5>Current Ingredients in the Inventory</h5>
+				<div ng-repeat='ingredient in list'>
+					<!-- A checkbox displaying the progress -->
+					<input type='checkbox' ng-model="ingredient.checked" ng-change='removeIngredient(ingredient)' />
+					<!-- An information of a task -->
+					<span>{{ingredient.ingredient}} and {{ingredient.id}}</span>
+					<div class='input-form'>
+						<input type='text' ng-model='ingredient.amount' ng-hide="true"
+							ng-show="ingredient.checked" placeholder="Enter amount" required="0" />
+							
+						<button ng-click='addIngredient(ingredient)' ng-hide="true"
+							ng-show="ingredient.checked">Add</button>
+
+
+					</div>
+				</div>
 			</div>
 			<div ng-show="success">Recipe Created</div>
 			<div ng-show="failure">Error while adding recipe.</div>
@@ -182,7 +209,7 @@
 		<a href="/index">Home</a>
 	</div>
 
- 
+
 
 </body>
 </html>

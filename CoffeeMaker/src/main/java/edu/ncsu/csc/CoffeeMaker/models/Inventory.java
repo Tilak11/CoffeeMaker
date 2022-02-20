@@ -87,7 +87,7 @@ public class Inventory extends DomainObject {
     // */
     public boolean enoughIngredients ( final Recipe r ) {
         boolean isEnough = true;
-        final List<Ingredient> ingredientList = r.getRecipeIngredients();
+        final List<Ingredient> ingredientList = r.getIngredientsList();
         for ( int k = 0; k < ingredientList.size(); k++ ) {
             for ( int i = 0; i < inventoryList.size(); i++ ) {
                 if ( inventoryList.get( i ).getIngredient().equals( ingredientList.get( k ).getIngredient() ) ) {
@@ -113,7 +113,7 @@ public class Inventory extends DomainObject {
     public boolean useIngredients ( final Recipe r ) {
 
         if ( enoughIngredients( r ) ) {
-            final List<Ingredient> ingredientList = r.getRecipeIngredients();
+            final List<Ingredient> ingredientList = r.getIngredientsList();
             for ( int k = 0; k < ingredientList.size(); k++ ) {
                 for ( int i = 0; i < inventoryList.size(); i++ ) {
                     if ( inventoryList.get( i ).getIngredient().equals( ingredientList.get( k ).getIngredient() ) ) {
