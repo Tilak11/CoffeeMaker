@@ -154,13 +154,15 @@ public class APITest {
 
         final Inventory inv = new Inventory();
         inv.addIngredient( new Ingredient( "COFFEE", 50 ) );
-        inv.addIngredient( new Ingredient( "MILK", 50 ) );
+        inv.addIngredient( new Ingredient( "MILK", 60 ) );
         inv.addIngredient( new Ingredient( "PUMPKIN_SPICE", 50 ) );
 
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
-        mvc.perform( put( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
+
+        mvc.perform( post( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( inv ) ) ).andExpect( status().isOk() );
+
         mvc.perform( post( String.format( "/api/v1/makecoffee/%s", "Mocha" ) ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( 20 ) ) ).andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.message" ).value( 10 ) );
