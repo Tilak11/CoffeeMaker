@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,9 +58,29 @@ public class APIInventoryController extends APIController {
     @PutMapping ( BASE_PATH + "/inventory" )
     public ResponseEntity updateInventory ( @RequestBody final Inventory inventory ) {
         final Inventory inventoryCurrent = service.getInventory();
-        inventoryCurrent.addIngredients( inventory.getCoffee(), inventory.getMilk(), inventory.getSugar(),
-                inventory.getChocolate() );
+        for ( int j = 0; j < inventory.getInventoryList().size(); j++ ) {
+            if ( !inventoryCurrent.addIngredient( inventory.getInventoryList().get( j ) ) ) {
+                return new ResponseEntity( errorResponse( inventory.getInventoryList().get( j ).getIngredient()
+                        + " cannot be added due to a client error" ), HttpStatus.BAD_REQUEST );
+            }
+        }
         service.save( inventoryCurrent );
         return new ResponseEntity( inventoryCurrent, HttpStatus.OK );
+    }
+
+    @PostMapping ( BASE_PATH + "/inventory" )
+    public ResponseEntity addInventory ( @RequestBody final Inventory inventory ) {
+        // final Inventory inventoryCurrent = service.getInventory();
+        // for ( int j = 0; j < inventory.getInventoryList().size(); j++ ) {
+        // if ( !inventoryCurrent.addIngredient(
+        // inventory.getInventoryList().get( j ) ) ) {
+        // return new ResponseEntity( errorResponse(
+        // inventory.getInventoryList().get( j ).getIngredient()
+        // + " cannot be added due to a client error" ), HttpStatus.BAD_REQUEST
+        // );
+        // }
+        // }
+        service.save( inventory );
+        return new ResponseEntity( inventory, HttpStatus.OK );
     }
 }

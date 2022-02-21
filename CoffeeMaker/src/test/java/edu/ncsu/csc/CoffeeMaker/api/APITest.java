@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
+import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 
@@ -74,24 +74,18 @@ public class APITest {
         // .andReturn().getResponse().getContentAsString();
         // assertTrue( recipe.contains( "Mocha" ) );
 
-        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
-                .andReturn().getResponse().getContentAsString();
+        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andExpect( status().isOk() ).andReturn().getResponse()
+                .getContentAsString();
 
         /* Figure out if the recipe we want is present */
         if ( !recipe.contains( "Mocha" ) ) {
-            final Recipe r = new Recipe();
-            r.setChocolate( 5 );
-            r.setCoffee( 3 );
-            r.setMilk( 4 );
-            r.setSugar( 8 );
-            r.setPrice( 10 );
-            r.setName( "Mocha" );
+            final Recipe r = createRecipe( "Mocha", 10, 3, 4, 8, 5 );
 
             mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                     .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
 
-            recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() ).andReturn()
-                    .getResponse().getContentAsString();
+            recipe = mvc.perform( get( "/api/v1/recipes" ) ).andExpect( status().isOk() ).andReturn().getResponse()
+                    .getContentAsString();
         }
 
         assertTrue( recipe.contains( "Mocha" ) );
@@ -102,41 +96,29 @@ public class APITest {
     @Transactional
     public void testGettingRecipesByName () throws Exception {
 
-        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
-                .andReturn().getResponse().getContentAsString();
+        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andExpect( status().isOk() ).andReturn().getResponse()
+                .getContentAsString();
 
-        final Recipe r = new Recipe();
-        r.setChocolate( 5 );
-        r.setCoffee( 3 );
-        r.setMilk( 4 );
-        r.setSugar( 8 );
-        r.setPrice( 10 );
-        r.setName( "Mocha" );
+        final Recipe r = createRecipe( "Mocha", 10, 3, 4, 8, 5 );
 
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
 
-        final Recipe r1 = new Recipe();
-        r1.setChocolate( 2 );
-        r1.setCoffee( 5 );
-        r1.setMilk( 7 );
-        r1.setSugar( 9 );
-        r1.setPrice( 8 );
-        r1.setName( "Tea" );
+        final Recipe r1 = createRecipe( "Tea", 8, 5, 7, 9, 2 );
 
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r1 ) ) ).andExpect( status().isOk() );
 
-        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Mocha" ) ) ).andDo( print() )
-                .andExpect( status().isOk() ).andReturn().getResponse().getContentAsString();
+        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Mocha" ) ) ).andExpect( status().isOk() )
+                .andReturn().getResponse().getContentAsString();
 
         assertTrue( recipe.contains( "Mocha" ) );
-        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Tea" ) ) ).andDo( print() )
-                .andExpect( status().isOk() ).andReturn().getResponse().getContentAsString();
+        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Tea" ) ) ).andExpect( status().isOk() )
+                .andReturn().getResponse().getContentAsString();
 
         assertTrue( recipe.contains( "Tea" ) );
 
-        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Coffee" ) ) ).andDo( print() )
+        recipe = mvc.perform( get( String.format( "/api/v1/recipes/%s", "Coffee" ) ) )
                 .andExpect( status().isNotFound() ).andReturn().getResponse().getContentAsString();
         assertEquals( "{\"status\":\"failed\",\"message\":\"No recipe found with name Coffee\"}", recipe );
     }
@@ -146,22 +128,21 @@ public class APITest {
     public void testAddingInventory () throws Exception {
 
         final Inventory r = new Inventory();
-        r.setChocolate( 50 );
-        r.setCoffee( 50 );
-        r.setMilk( 50 );
-        r.setSugar( 50 );
+        r.addIngredient( new Ingredient( "COFFEE", 50 ) );
+        r.addIngredient( new Ingredient( "MILK", 50 ) );
+        r.addIngredient( new Ingredient( "PUMPKIN_SPICE", 50 ) );
+
         final JsonMapper mapper = new JsonMapper();
 
         mvc.perform( put( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
-        final String inventory = mvc.perform( get( "/api/v1/inventory" ) ).andDo( print() ).andExpect( status().isOk() )
-                .andReturn().getResponse().getContentAsString();
+        final String inventory = mvc.perform( get( "/api/v1/inventory" ) ).andExpect( status().isOk() ).andReturn()
+                .getResponse().getContentAsString();
         final Inventory i = mapper.readValue( inventory, Inventory.class );
 
-        assertEquals( r.getChocolate(), i.getChocolate() );
-        assertEquals( r.getCoffee(), i.getCoffee() );
-        assertEquals( r.getMilk(), i.getMilk() );
-        assertEquals( r.getSugar(), i.getSugar() );
+        assertEquals( r.getInventoryList().get( 0 ).toString(), i.getInventoryList().get( 0 ).toString() );
+        assertEquals( r.getInventoryList().get( 1 ).toString(), i.getInventoryList().get( 1 ).toString() );
+        assertEquals( r.getInventoryList().get( 2 ).toString(), i.getInventoryList().get( 2 ).toString() );
 
     }
 
@@ -169,24 +150,19 @@ public class APITest {
     @Transactional
     public void testMakeCoffee () throws Exception {
 
-        final Recipe r = new Recipe();
-        r.setChocolate( 5 );
-        r.setCoffee( 3 );
-        r.setMilk( 4 );
-        r.setSugar( 8 );
-        r.setPrice( 10 );
-        r.setName( "Mocha" );
+        final Recipe r = createRecipe( "Mocha", 10, 3, 4, 8, 5 );
 
         final Inventory inv = new Inventory();
-        inv.setChocolate( 50 );
-        inv.setCoffee( 50 );
-        inv.setMilk( 50 );
-        inv.setSugar( 50 );
+        inv.addIngredient( new Ingredient( "COFFEE", 50 ) );
+        inv.addIngredient( new Ingredient( "MILK", 60 ) );
+        inv.addIngredient( new Ingredient( "PUMPKIN_SPICE", 50 ) );
 
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
-        mvc.perform( put( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
+
+        mvc.perform( post( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( inv ) ) ).andExpect( status().isOk() );
+
         mvc.perform( post( String.format( "/api/v1/makecoffee/%s", "Mocha" ) ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( 20 ) ) ).andExpect( status().isOk() )
                 .andExpect( jsonPath( "$.message" ).value( 10 ) );
@@ -197,31 +173,37 @@ public class APITest {
     @Transactional
     public void testDeleteRecipe () throws Exception {
 
-        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() )
-                .andReturn().getResponse().getContentAsString();
+        String recipe = mvc.perform( get( "/api/v1/recipes" ) ).andExpect( status().isOk() ).andReturn().getResponse()
+                .getContentAsString();
         assertFalse( recipe.contains( "Mocha" ) );
 
-        final Recipe r = new Recipe();
-        r.setChocolate( 5 );
-        r.setCoffee( 3 );
-        r.setMilk( 4 );
-        r.setSugar( 8 );
-        r.setPrice( 10 );
-        r.setName( "Mocha" );
+        final Recipe r = createRecipe( "Mocha", 10, 3, 4, 8, 5 );
 
         mvc.perform( post( "/api/v1/recipes" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
 
-        recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() ).andReturn()
-                .getResponse().getContentAsString();
+        recipe = mvc.perform( get( "/api/v1/recipes" ) ).andExpect( status().isOk() ).andReturn().getResponse()
+                .getContentAsString();
         assertTrue( recipe.contains( "Mocha" ) );
 
         mvc.perform( delete( String.format( "/api/v1/recipes/%s", "Mocha" ) ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
-        recipe = mvc.perform( get( "/api/v1/recipes" ) ).andDo( print() ).andExpect( status().isOk() ).andReturn()
-                .getResponse().getContentAsString();
+        recipe = mvc.perform( get( "/api/v1/recipes" ) ).andExpect( status().isOk() ).andReturn().getResponse()
+                .getContentAsString();
         assertFalse( recipe.contains( "Mocha" ) );
 
+    }
+
+    private Recipe createRecipe ( final String name, final Integer price, final Integer coffee, final Integer milk,
+            final Integer pumpkinSpice, final Integer chocolate ) {
+        final Recipe recipe = new Recipe();
+        recipe.setName( name );
+        recipe.setPrice( price );
+        recipe.addIngredient( new Ingredient( "COFFEE", coffee ) );
+        recipe.addIngredient( new Ingredient( "MILK", milk ) );
+        recipe.addIngredient( new Ingredient( "PUMPKIN_SPICE", pumpkinSpice ) );
+
+        return recipe;
     }
 
 }

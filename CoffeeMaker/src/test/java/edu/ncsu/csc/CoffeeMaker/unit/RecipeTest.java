@@ -1,5 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.unit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import javax.validation.ConstraintViolationException;
@@ -15,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
+import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
@@ -35,22 +38,13 @@ public class RecipeTest {
     @Transactional
     public void testAddRecipe () {
 
-        final Recipe r1 = new Recipe();
+        final Recipe r1 = createRecipe( "Black Coffee", 1, 1, 0, 0, 0 );
         r1.setName( "Black Coffee" );
-        r1.setPrice( 1 );
-        r1.setCoffee( 1 );
-        r1.setMilk( 0 );
-        r1.setSugar( 0 );
-        r1.setChocolate( 0 );
         service.save( r1 );
 
-        final Recipe r2 = new Recipe();
+        final Recipe r2 = createRecipe( "Mocha", 1, 1, 1, 1, 1 );
         r2.setName( "Mocha" );
-        r2.setPrice( 1 );
-        r2.setCoffee( 1 );
-        r2.setMilk( 1 );
-        r2.setSugar( 1 );
-        r2.setChocolate( 1 );
+
         service.save( r2 );
 
         final List<Recipe> recipes = service.findAll();
@@ -64,21 +58,9 @@ public class RecipeTest {
     public void testNoRecipes () {
         Assert.assertEquals( "There should be no Recipes in the CoffeeMaker", 0, service.findAll().size() );
 
-        final Recipe r1 = new Recipe();
-        r1.setName( "Tasty Drink" );
-        r1.setPrice( 12 );
-        r1.setCoffee( -12 );
-        r1.setMilk( 0 );
-        r1.setSugar( 0 );
-        r1.setChocolate( 0 );
+        final Recipe r1 = createRecipe( "Tasty Drink", 12, -12, 0, 0, 0 );
 
-        final Recipe r2 = new Recipe();
-        r2.setName( "Mocha" );
-        r2.setPrice( 1 );
-        r2.setCoffee( 1 );
-        r2.setMilk( 1 );
-        r2.setSugar( 1 );
-        r2.setChocolate( 1 );
+        final Recipe r2 = createRecipe( "Mocha", 1, 1, 1, 1, 1 );
 
         final List<Recipe> recipes = List.of( r1, r2 );
 
@@ -191,7 +173,7 @@ public class RecipeTest {
     public void testAddRecipe7 () {
         Assert.assertEquals( "There should be no Recipes in the CoffeeMaker", 0, service.findAll().size() );
         final String name = "Coffee";
-        final Recipe r1 = createRecipe( name, 50, 3, 1, 1, -2 );
+        final Recipe r1 = createRecipe( name, 50, 3, 1, -1, 0 );
 
         try {
             service.save( r1 );
@@ -285,24 +267,21 @@ public class RecipeTest {
         final Recipe retrieved = service.findByName( "Coffee" );
 
         Assert.assertEquals( 70, (int) retrieved.getPrice() );
-        Assert.assertEquals( 3, (int) retrieved.getCoffee() );
-        Assert.assertEquals( 1, (int) retrieved.getMilk() );
-        Assert.assertEquals( 1, (int) retrieved.getSugar() );
-        Assert.assertEquals( 0, (int) retrieved.getChocolate() );
+        final String expected = "Coffee 70 with ingredients [Ingredient [ ingredient=COFFEE, amount=3]Ingredient [ ingredient=MILK, amount=1]Ingredient [ ingredient=PUMPKIN_SPICE, amount=1]]";
 
+        assertEquals( expected, retrieved.toString() );
         Assert.assertEquals( "Editing a recipe shouldn't duplicate it", 1, service.count() );
 
     }
 
     private Recipe createRecipe ( final String name, final Integer price, final Integer coffee, final Integer milk,
-            final Integer sugar, final Integer chocolate ) {
+            final Integer pumpkinSpice, final Integer chocolate ) {
         final Recipe recipe = new Recipe();
         recipe.setName( name );
         recipe.setPrice( price );
-        recipe.setCoffee( coffee );
-        recipe.setMilk( milk );
-        recipe.setSugar( sugar );
-        recipe.setChocolate( chocolate );
+        recipe.addIngredient( new Ingredient( "COFFEE", coffee ) );
+        recipe.addIngredient( new Ingredient( "MILK", milk ) );
+        recipe.addIngredient( new Ingredient( "PUMPKIN_SPICE", pumpkinSpice ) );
 
         return recipe;
     }
@@ -319,20 +298,19 @@ public class RecipeTest {
         Recipe retrieved = service.findByName( "Coffee" );
 
         Assert.assertEquals( 50, (int) retrieved.getPrice() );
-        Assert.assertEquals( 3, (int) retrieved.getCoffee() );
-        Assert.assertEquals( 1, (int) retrieved.getMilk() );
-        Assert.assertEquals( 1, (int) retrieved.getSugar() );
-        Assert.assertEquals( 0, (int) retrieved.getChocolate() );
+
+        final String expected = "Coffee 50 with ingredients [Ingredient [ ingredient=COFFEE, amount=3]Ingredient [ ingredient=MILK, amount=1]Ingredient [ ingredient=PUMPKIN_SPICE, amount=1]]";
+
+        assertEquals( expected, retrieved.toString() );
 
         final Recipe r2 = createRecipe( "newCoffee", 70, 5, 2, 2, 1 );
         r1.updateRecipe( r2 );
         service.save( r1 );
-        retrieved = service.findByName( "Coffee" );
+        retrieved = service.findByName( "newCoffee" );
         Assert.assertEquals( 70, (int) retrieved.getPrice() );
-        Assert.assertEquals( 5, (int) retrieved.getCoffee() );
-        Assert.assertEquals( 2, (int) retrieved.getMilk() );
-        Assert.assertEquals( 2, (int) retrieved.getSugar() );
-        Assert.assertEquals( 1, (int) retrieved.getChocolate() );
+        final String expected1 = "newCoffee 70 with ingredients [Ingredient [ ingredient=COFFEE, amount=5]Ingredient [ ingredient=MILK, amount=2]Ingredient [ ingredient=PUMPKIN_SPICE, amount=2]]";
+
+        assertEquals( expected1, retrieved.toString() );
 
         Assert.assertEquals( "Updating a recipe shouldn't duplicate it", 1, service.count() );
 
@@ -343,7 +321,9 @@ public class RecipeTest {
     public void testToString () {
 
         final Recipe r1 = createRecipe( "Coffee", 50, 3, 1, 1, 0 );
-        Assert.assertEquals( "Coffee", r1.toString() );
+        Assert.assertEquals(
+                "Coffee 50 with ingredients [Ingredient [ ingredient=COFFEE, amount=3]Ingredient [ ingredient=MILK, amount=1]Ingredient [ ingredient=PUMPKIN_SPICE, amount=1]]",
+                r1.toString() );
 
     }
 
@@ -366,17 +346,17 @@ public class RecipeTest {
 
     }
 
-    @Test
-    @Transactional
-    public void testCheckRecipe () {
-
-        final Recipe r1 = createRecipe( "Coffee", 50, 0, 0, 0, 0 );
-        Assert.assertTrue( r1.checkRecipe() );
-
-        r1.setMilk( 3 );
-        Assert.assertFalse( r1.checkRecipe() );
-
-    }
+    // @Test
+    // @Transactional
+    // public void testCheckRecipe () {
+    //
+    // final Recipe r1 = createRecipe( "Coffee", 50, 0, 0, 0, 0 );
+    // Assert.assertTrue( r1.checkRecipe() );
+    //
+    // r1.setMilk( 3 );
+    // Assert.assertFalse( r1.checkRecipe() );
+    //
+    // }
 
     @Test
     @Transactional
