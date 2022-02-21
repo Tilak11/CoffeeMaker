@@ -49,6 +49,9 @@ public class Ingredient extends DomainObject {
     }
 
     public void setAmount ( final int amount ) {
+        if ( amount < 0 ) {
+            throw new IllegalArgumentException( "Amount cannot be less than 0" );
+        }
         this.amount = amount;
     }
 

@@ -211,8 +211,7 @@
 					<div class='input-form'>
 						<input type='text' ng-model='ingredient.amount' ng-hide="true"
 							ng-show="ingredient.checked" placeholder="Enter amount"
-							required="0" /> <span ng-show="negativeAmount"> Amount
-							should be positive</span>
+							required="0" />
 
 						<button ng-click='addIngredient(ingredient)' ng-hide="true"
 							ng-show="ingredient.checked">Add</button>
@@ -227,6 +226,9 @@
 			<div ng-show="fullStorage">Only three recipes allowed</div>
 			<div ng-show="negativePrice">Price should be positive</div>
 			<div ng-show="atLeastOneIngredient">At least one ingredient should be selected</div>
+			<div ng-show="negativeAmount"> Amount should be positive</div>
+			
+			
 		</div>
 
 		<a href="/index">Home</a>

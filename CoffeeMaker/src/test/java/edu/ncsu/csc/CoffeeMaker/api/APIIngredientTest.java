@@ -1,5 +1,9 @@
 package edu.ncsu.csc.CoffeeMaker.api;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,9 +43,9 @@ public class APIIngredientTest {
 
     @Autowired
     private IngredientService     iservice;
-    
+
     @Autowired
-    private InventoryService     invservice;
+    private InventoryService      invservice;
 
     /**
      * Sets up the tests.
@@ -121,21 +125,36 @@ public class APIIngredientTest {
         final Ingredient r4 = new Ingredient( "Milk", 500 );
 
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
-        		.content( TestUtils.asJsonString( i2 ) ) ).andExpect( status().isOk() );
+                .content( TestUtils.asJsonString( i2 ) ) ).andExpect( status().isOk() );
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r4 ) ) ).andExpect( status().isConflict() );
 
         Assert.assertEquals( "Creating a fourth Ingredient should not get saved", 3, iservice.count() );
     }
 
-    // private Ingredient createIngredient () {
-    // final Ingredient ivt = new Ingredient( IngredientType.COFFEE, 500 );
-    //
-    // // ivt.addIngredient( new Ingredient( IngredientType.COFFEE, 500 ) );
-    // // ivt.addIngredient( new Ingredient( IngredientType.MILK, 500 ) );
-    // // ivt.addIngredient( new Ingredient( IngredientType.PUMPKIN_SPICE, 500
-    // // ) );
-    //
-    // return (Ingredient) ivt;
-    // }
+    @Test
+    @Transactional
+    public void testDeleteIngredient () throws Exception {
+
+        String ingredient = mvc.perform( get( "/api/v1/ingredients" ) ).andExpect( status().isOk() ).andReturn()
+                .getResponse().getContentAsString();
+        assertFalse( ingredient.contains( "Ice" ) );
+
+        final Ingredient r = new Ingredient( "Ice", 500 );
+
+        mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( r ) ) ).andExpect( status().isOk() );
+
+        ingredient = mvc.perform( get( "/api/v1/ingredients" ) ).andExpect( status().isOk() ).andReturn().getResponse()
+                .getContentAsString();
+        assertTrue( ingredient.contains( "Ice" ) );
+
+        mvc.perform( delete( String.format( "/api/v1/ingredients/%s", "Ice" ) )
+                .contentType( MediaType.APPLICATION_JSON ).content( TestUtils.asJsonString( r ) ) )
+                .andExpect( status().isOk() );
+        ingredient = mvc.perform( get( "/api/v1/ingredients/%s", "Ice" ) ).andExpect( status().isNotFound() )
+                .andReturn().getResponse().getContentAsString();
+        assertFalse( ingredient.contains( "Ice" ) );
+    }
+
 }
