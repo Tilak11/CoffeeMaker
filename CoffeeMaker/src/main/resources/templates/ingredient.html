@@ -40,6 +40,7 @@
 				$scope.inventory = {
 						inventoryList : []
 					};
+				
 				$scope.ingredient = {
 					ingredient : '',
 					amount:''
@@ -60,22 +61,22 @@
 			$scope.addIngredient = function() {
 				$scope.success = false;
 				$scope.failure = false;
-
+				$scope.duplicate = false;
+				$scope.negative = false;
 				$http.post("/api/v1/ingredients", $scope.ingredient).then(
 						function(success) {
 							$scope.success = true;
 							$scope.failure = false;
 						}, function(rejection) {
+							if(rejection.status == 409)
+								$scope.duplicate = true;
+							if(rejection.status == 400)
+								$scope.negative = true;
 							console.error("Error while adding ingredient");
+							return;
 						});
-				$scope.inventory.inventoryList.push($scope.ingredient);
-				$http.put("/api/v1/inventory", $scope.inventory).then(
-						function(success) {
-							$scope.success = true;
-							$scope.failure = false;
-						}, function(rejection) {
-							console.error("Error while adding ingredient");
-						});
+				
+				
 				
 				
 			}
@@ -150,6 +151,8 @@
 			</div>
 			<div ng-show="success">Ingredient Created</div>
 			<div ng-show="failure">Error while adding Ingredient.</div>
+			<div ng-show="duplicate">Duplicate Ingredient</div>
+			<div ng-show="negative">Only positive integers allowed</div>
 		</div>
 
 		<a href="/index">Home</a>
