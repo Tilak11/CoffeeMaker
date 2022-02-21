@@ -28,7 +28,7 @@ public class APIIngredientController extends APIController {
     @Autowired
     private IngredientService ingredientService;
     @Autowired
-    private InventoryService inventoryService;
+    private InventoryService  inventoryService;
 
     /**
      * REST API method to provide GET access to all ingredients in the system
@@ -74,30 +74,28 @@ public class APIIngredientController extends APIController {
     @PostMapping ( BASE_PATH + "/ingredients" )
     public ResponseEntity createIngredient ( @RequestBody final Ingredient ingredient ) {
 
-		List<Ingredient> list = inventoryService.getInventory().getInventoryList();
-		Ingredient db = null;
-		for(int i=0; i<list.size(); i++) {
-			if(list.get(i).getIngredient().equals(ingredient.getIngredient())) {
-				db= list.get(i);
-			}
-		}
+        final List<Ingredient> list = inventoryService.getInventory().getInventoryList();
+        Ingredient db = null;
+        for ( int i = 0; i < list.size(); i++ ) {
+            if ( list.get( i ).getIngredient().equals( ingredient.getIngredient() ) ) {
+                db = list.get( i );
+            }
+        }
         if ( null != db ) {
             return new ResponseEntity(
                     errorResponse( "Ingredient with the name " + ingredient.getIngredient() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
-        if(ingredient.getAmount() < 0) {
-        	   return new ResponseEntity(
-                       errorResponse( "Minimum value should be 0" ),
-                       HttpStatus.BAD_REQUEST );
+        if ( ingredient.getAmount() < 0 ) {
+            return new ResponseEntity( errorResponse( "Minimum value should be 0" ), HttpStatus.BAD_REQUEST );
         }
         try {
-        	
-            ingredientService.save( ingredient );   
+
+            ingredientService.save( ingredient );
             final Inventory inventoryCurrent = inventoryService.getInventory();
-            inventoryCurrent.addIngredient(ingredient);
+            inventoryCurrent.addIngredient( ingredient );
             inventoryService.save( inventoryCurrent );
-            
+
             return new ResponseEntity( successResponse( ingredient.getIngredient() + " successfully created" ),
                     HttpStatus.OK );
         }
@@ -131,37 +129,5 @@ public class APIIngredientController extends APIController {
 
         return new ResponseEntity( successResponse( name + " was deleted successfully" ), HttpStatus.OK );
     }
-
-    // @GetMapping ( BASE_PATH + "{object}/{field}/{value}" )
-    // public ResponseEntity getObject ( @PathVariable final String object,
-    // @PathVariable final String field,
-    // @PathVariable final String value ) {
-    // try {
-    // Object obj = null;
-    // switch ( object ) {
-    // case "Ingredient": // go do something
-    // break;
-    //
-    // case "Recipe": // go do something else
-    // if (field.equals( "name" )) {
-    // obj =
-    // }
-    // break;
-    // }
-    //
-    // if ( null == obj ) {
-    // return new ResponseEntity( HttpStatus.NOT_FOUND );
-    // }
-    //
-    // return new ResponseEntity( obj, HttpStatus.OK );
-    //
-    // }
-    // catch ( final Exception e ) {
-    // return new ResponseEntity( "Something went wrong with your request :: " +
-    // e.getCause(),
-    // HttpStatus.BAD_REQUEST );
-    // }
-    //
-    // }
 
 }
