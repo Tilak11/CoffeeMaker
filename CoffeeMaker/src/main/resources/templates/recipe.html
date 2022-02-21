@@ -65,12 +65,29 @@
 			$scope.addRecipe = function() {
 				$scope.success = false;
 				$scope.failure = false;
-
+				$scope.duplicate = false;
+				$scope.fullStorage = false;
+				$scope.negativePrice = false;
+				$scope.atLeastOneIngredient = false;
+			
+				
+				if($scope.recipe.price < 0){
+					$scope.negativePrice = true;
+					return;
+					
+				}
 				$http.post("/api/v1/recipes", $scope.recipe).then(
 						function(success) {
 							$scope.success = true;
 							$scope.failure = false;
 						}, function(rejection) {
+							if(rejection.status == 409)
+								$scope.duplicate = true;
+							if(rejection.status == 507)
+								$scope.fullStorage = true;
+							if(rejection.status == 400)
+								$scope.atLeastOneIngredient = true;
+							
 							console.error("Error while adding recipe");
 						});
 			}
@@ -78,7 +95,12 @@
 			$scope.addIngredient = function(ing){
 				$scope.success = false;
 				$scope.failure = false;
-				var found = false;				
+				var found = false;	
+				$scope.negativeAmount = false;
+				if(ing.amount < 0){
+					$scope.negativeAmount = true;
+					return;
+				}
 				for(var i=0; i< $scope.recipe.ingredientsList.length; i++){
 					if($scope.recipe.ingredientsList[i].ingredient === ing.ingredient){
 						$scope.recipe.ingredientsList[i].amount = ing.amount;
@@ -182,13 +204,16 @@
 				<h5>Current Ingredients in the Inventory</h5>
 				<div ng-repeat='ingredient in list'>
 					<!-- A checkbox displaying the progress -->
-					<input type='checkbox' ng-model="ingredient.checked" ng-change='removeIngredient(ingredient)' />
+					<input type='checkbox' ng-model="ingredient.checked"
+						ng-change='removeIngredient(ingredient)' />
 					<!-- An information of a task -->
 					<span>{{ingredient.ingredient}}</span>
 					<div class='input-form'>
 						<input type='text' ng-model='ingredient.amount' ng-hide="true"
-							ng-show="ingredient.checked" placeholder="Enter amount" required="0" />
-							
+							ng-show="ingredient.checked" placeholder="Enter amount"
+							required="0" /> <span ng-show="negativeAmount"> Amount
+							should be positive</span>
+
 						<button ng-click='addIngredient(ingredient)' ng-hide="true"
 							ng-show="ingredient.checked">Add</button>
 
@@ -198,6 +223,10 @@
 			</div>
 			<div ng-show="success">Recipe Created</div>
 			<div ng-show="failure">Error while adding recipe.</div>
+			<div ng-show="duplicate">Recipe with this name exists.</div>
+			<div ng-show="fullStorage">Only three recipes allowed</div>
+			<div ng-show="negativePrice">Price should be positive</div>
+			<div ng-show="atLeastOneIngredient">At least one ingredient should be selected</div>
 		</div>
 
 		<a href="/index">Home</a>

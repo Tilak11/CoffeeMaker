@@ -21,6 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
+import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 
 @RunWith ( SpringRunner.class )
 @SpringBootTest
@@ -38,6 +39,9 @@ public class APIIngredientTest {
 
     @Autowired
     private IngredientService     iservice;
+    
+    @Autowired
+    private InventoryService     invservice;
 
     /**
      * Sets up the tests.
@@ -88,7 +92,7 @@ public class APIIngredientTest {
 
         iservice.save( i1 );
 
-        final Ingredient i2 = new Ingredient( "Coffee", 500 );
+        final Ingredient i2 = new Ingredient( "new coffee", -500 );
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( i2 ) ) ).andExpect( status().is4xxClientError() );
 
@@ -116,6 +120,8 @@ public class APIIngredientTest {
 
         final Ingredient r4 = new Ingredient( "Milk", 500 );
 
+        mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
+        		.content( TestUtils.asJsonString( i2 ) ) ).andExpect( status().isOk() );
         mvc.perform( post( "/api/v1/ingredients" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( r4 ) ) ).andExpect( status().isConflict() );
 

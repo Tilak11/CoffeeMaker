@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.CoffeeMaker.models.Ingredient;
+import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.services.IngredientService;
+import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 
 @SuppressWarnings ( { "unchecked", "rawtypes" } )
 @RestController
@@ -25,6 +27,8 @@ public class APIIngredientController extends APIController {
      */
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    private InventoryService inventoryService;
 
     /**
      * REST API method to provide GET access to all ingredients in the system
@@ -70,17 +74,30 @@ public class APIIngredientController extends APIController {
     @PostMapping ( BASE_PATH + "/ingredients" )
     public ResponseEntity createIngredient ( @RequestBody final Ingredient ingredient ) {
 
-        final Ingredient db = ingredientService.findByIngredient( ingredient.getIngredient() );
+		List<Ingredient> list = inventoryService.getInventory().getInventoryList();
+		Ingredient db = null;
+		for(int i=0; i<list.size(); i++) {
+			if(list.get(i).getIngredient().equals(ingredient.getIngredient())) {
+				db= list.get(i);
+			}
+		}
         if ( null != db ) {
-        	System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
             return new ResponseEntity(
                     errorResponse( "Ingredient with the name " + ingredient.getIngredient() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
-
+        if(ingredient.getAmount() < 0) {
+        	   return new ResponseEntity(
+                       errorResponse( "Minimum value should be 0" ),
+                       HttpStatus.BAD_REQUEST );
+        }
         try {
-        	System.out.println("------_-----------> "+ingredient.getIngredient());
-            ingredientService.save( ingredient );
+        	
+            ingredientService.save( ingredient );   
+            final Inventory inventoryCurrent = inventoryService.getInventory();
+            inventoryCurrent.addIngredient(ingredient);
+            inventoryService.save( inventoryCurrent );
+            
             return new ResponseEntity( successResponse( ingredient.getIngredient() + " successfully created" ),
                     HttpStatus.OK );
         }

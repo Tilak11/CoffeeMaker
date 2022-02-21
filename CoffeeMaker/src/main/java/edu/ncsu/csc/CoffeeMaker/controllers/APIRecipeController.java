@@ -75,12 +75,11 @@ public class APIRecipeController extends APIController {
      */
     @PostMapping ( BASE_PATH + "/recipes" )
     public ResponseEntity createRecipe ( @RequestBody final Recipe recipe ) {
-    	System.out.println(recipe.getName());
-    	System.out.println(recipe.getPrice());
-    	System.out.println(recipe.getIngredientsList().size());
-    	System.out.println(recipe.getIngredientsList().get(0).getIngredient());
-    	System.out.println(recipe.getIngredientsList().get(0).getId());
     	
+    	if(recipe.getIngredientsList().size() < 1) {
+    		return new ResponseEntity( errorResponse( "At least one ingredient should be selected" ),
+                    HttpStatus.BAD_REQUEST );
+    	}
         if ( null != service.findByName( recipe.getName() ) ) {
             return new ResponseEntity( errorResponse( "Recipe with the name " + recipe.getName() + " already exists" ),
                     HttpStatus.CONFLICT );
